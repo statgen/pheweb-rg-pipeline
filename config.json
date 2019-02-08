@@ -1,0 +1,13 @@
+{
+   "LDSC": "/home/ldsc",
+   "LDSC_snplist": "/home/ldsc/w_hm3.snplist",
+   "LDSC_scores": "/home/ldsc/eur_w_ld_chr/",
+   "columns": {
+      "pvalue": "pval",
+      "effect": "beta",
+      "snp": "ID",
+      "effect_allele": "ALT",
+      "other_allele": "REF",
+   },
+   "no_effect": 0,
+}

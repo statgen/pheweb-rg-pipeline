@@ -1,0 +1,27 @@
+[
+   {
+      "assoc_files": ["/home/data/PheCode_990_SAIGE_MACge20.txt.vcf.gz"],
+      "phenocode": 990,
+      "num_cases": 10000,
+      "num_controls": 10000
+   },
+   {
+      "assoc_files": ["/home/data/PheCode_989_SAIGE_MACge20.txt.vcf.gz"],
+      "phenocode": 989,
+      "num_cases": 100000,
+      "num_controls": 100000
+   },
+   {
+      "assoc_files": ["/home/data/PheCode_974_SAIGE_MACge20.txt.vcf.gz"],
+      "phenocode": 974,
+      "num_cases": 100000,
+      "num_controls": 100000
+   },
+   {
+      "assoc_files": ["/home/data/PheCode_964_SAIGE_MACge20.txt.vcf.gz"],
+      "phenocode": 964,
+      "num_cases": 100000,
+      "num_controls": 100000
+   }
+]
+
