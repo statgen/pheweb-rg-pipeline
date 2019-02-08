@@ -13,8 +13,8 @@ Genetic correlation on the observed scale (i.e. not liability scale)
 - N cases and N controls (for binary traits) are provided
 - N >3K 
 - From LD score regression (LDSC): 
-    - w_hm3.snplist #HapMap SNPs to extract for LDSC analyses 
-    - eur_w_ld_chr/ #pre-computed LD scores using 1000G Eur
+    - w_hm3.snplist #HapMap SNPs to extract for LDSC analyses (see https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
+    - eur_w_ld_chr/ #pre-computed LD scores using 1000G Eur (see https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
 
 ## How to run
 
