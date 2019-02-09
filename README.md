@@ -42,7 +42,7 @@ The key difference are:
 -  Fields `num_cases` and `num_controls` are required
 -  Only one file is allowed in `assoc_files`
 
-If you have a tab-delimited file (no header) with the following columns: full path to summary stat file, phenocode, number of cases, number controls, use `tab2pheno-list.py -i [file.tsv]` to create `pheno-list.json`.
+If you have a tab-delimited file (no header) with the following columns: full path to summary stat file, phenocode, number of cases, number of controls, use `tab2pheno-list.py -i [file.tsv]` to create `pheno-list.json`.
 
 Further details on how to create input file you can find at https://github.com/statgen/pheweb.
 
