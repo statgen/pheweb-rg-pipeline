@@ -84,7 +84,7 @@ rule munge:
          other_allele_column = config['columns']['other_allele']
          no_effect_value = config['no_effect']
          output_prefix = os.path.join("munged", wildcards.phenocode)
-         shell("{munge_exec} --sumstats {trait_assoc_file} --merge-alleles {snp_list} --N-cas {trait_n_cases} --N-con {trait_n_controls} --p {pval_column} --signed-sumstats {effect_column},{no_effect_value} --snp {snp_column} --a1 {effect_allele_column} --a2 {other_allele_column} --out {output_prefix}")
+         shell("{munge_exec} --chunksize 100000 --sumstats {trait_assoc_file} --merge-alleles {snp_list} --N-cas {trait_n_cases} --N-con {trait_n_controls} --p {pval_column} --signed-sumstats {effect_column},{no_effect_value} --snp {snp_column} --a1 {effect_allele_column} --a2 {other_allele_column} --out {output_prefix}")
 
 
 rule split:
