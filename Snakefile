@@ -6,11 +6,12 @@ import itertools
 configfile: "config.json"
 
 
-def get_all_phenocodes(json_file):
+def get_unique_phenocode_pairs(json_file, loc):
    with open(json_file, 'r') as f_in:
       traits = json.load(f_in)
-      for trait in traits:
-         yield trait['phenocode']   
+      phenocodes = [str(t['phenocode']).replace('.', '__') for t in traits]
+      unique_pairs = itertools.combinations(phenocodes, 2)
+      return [ p[loc] for p in unique_pairs ]
 
 
 def read_corr(filename):
@@ -26,7 +27,7 @@ def read_corr(filename):
       if not record: return {}
       record = dict(zip(header, record.rstrip().split()))
       for p in ['p1', 'p2']:
-         record[p] = re.sub(r'\.sumstats\.gz$', '', os.path.split(record[p])[-1])
+         record[p] = re.sub(r'\.sumstats\.gz$', '', os.path.split(record[p])[-1]).replace('__', '.')
       return {'header': header, 'record': record}
 
 
@@ -43,7 +44,7 @@ rule all:
 
 
 rule merge:
-   input: expand("pair_corr/{phenocode1}.{phenocode2}.log", lambda x, y: [(x[i], y[j]) for i, j in itertools.combinations(range(0, len(x)), 2)], phenocode1 = get_all_phenocodes("pheno-list.json"), phenocode2 = get_all_phenocodes("pheno-list.json"))
+   input: expand("pair_corr/{phenocode1}.{phenocode2}.log", zip, phenocode1 = get_unique_phenocode_pairs("pheno-list.json", 0), phenocode2 = get_unique_phenocode_pairs("pheno-list.json", 1))
    output: "result/ALL.RG.txt"
    run:
       merged = []
@@ -94,6 +95,7 @@ rule split:
          with open(f) as f_in:
             data = json.load(f_in)
             for trait in data:
-               with open("traits/{}.json".format(trait['phenocode']), "w") as f_out:
+               filename = str(trait['phenocode']).replace('.', '__')
+               with open("traits/{}.json".format(filename), "w") as f_out:
                   json.dump(trait, f_out)
 
