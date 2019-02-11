@@ -56,9 +56,22 @@ If you have a tab-delimited file (no header) with the following columns: full pa
 
 Further details on how to create input file you can find at https://github.com/statgen/pheweb.
 
-### Run locally
+### Run
 
-snakemake -j [number of cores]
+#### - Locally 
+
+```
+snakemake -j [number of cores to use]
+```
+
+#### - With SLURM
+
+(Optional) Edit `partition` option in the `cluster.SLURM.json` configuration file.
+
+Run the following command specifying max. number of SLURM jobs (submitted at once) with the `-j` option:
+```
+snakemake -j [max number of jobs to submit] --cluster-config cluster.SLURM.json --cluster "sbatch -J {cluster.job-name} --mem {cluster.mem} -p {cluster.partition} -t {cluster.time} -e {cluster.error} -o {cluster.output}"
+```
 
 ### Output
 
