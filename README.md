@@ -58,7 +58,7 @@ Further details on how to create input file you can find at https://github.com/s
 
 ### Run
 
-*Important:* if you have >1000 phenotypes, it might take a while until `snakemake` evaluates all dependenies and starts submitting computational jobs. Try to use the most recent version of `snakemake`.
+*Important:* if you have >1000 phenotypes, it may take a while until `snakemake` evaluates all dependenies and starts submitting computational jobs. Try to use the most recent version of `snakemake`.
 
 #### - Locally 
 
