@@ -1,7 +1,7 @@
 # pheweb-rg-pipeline
-Genetic correlation calculation pipeline via summary statistics for PheWeb
 
-Genetic correlation on the observed scale (i.e. not liability scale)
+Pipepline for calculating genetic correlations via summary statistics between >1,000 phenotypes in PheWeb.
+Genetic correlation is on the observed scale (i.e. not liability scale)
 
 ## Required tools
 - Snakemake
@@ -18,9 +18,19 @@ Genetic correlation on the observed scale (i.e. not liability scale)
 
 ## How to run
 
+### Configuration
+
+Before running the pipeline you may need to change your `config.json` file:
+- Set your working directory in the `workdir` field. Pipeline will write all intermediate and final results to this working directory. Default working directory is `.` (i.e. current directory with the `Snakemake` file).
+- Specify path to the directory with LDSC tool in the `LDSC` field.
+- Specify path to HapMap SNP list (i.e. w_hm3.snplist) in `LDSC_snplist` field.
+- Specify path to LD scores directory (i.e. eur_w_ld_chr/) in `LDSC_scores` field.
+- Provide column names inside `columns` field collection.
+- Set `no_effect` to 0 if analyzing regression coefficients and 1 if analyzing odds-rations.
+
 ### Input
 
-The input file format `pheno-list.json` is the same as in PheWEB data import pipeline.
+The input file must be named `pheno-list.json` and must be placed to your `workdir` (see Configuration section). It has the same format as in PheWEB data import pipeline.
 ```json
 [
  {
@@ -46,22 +56,13 @@ If you have a tab-delimited file (no header) with the following columns: full pa
 
 Further details on how to create input file you can find at https://github.com/statgen/pheweb.
 
-### Configuration
-
-Before running the pipeline you may need to change your `config.json` file:
-- Specify path to the directory with LDSC tool in the `LDSC` field.
-- Specify path to HapMap SNP list (i.e. w_hm3.snplist) in `LDSC_snplist` field.
-- Specify path to LD scores directory (i.e. eur_w_ld_chr/) in `LDSC_scores` field.
-- Provide column names inside `columns` field collection.
-- Set `no_effect` to 0 if analyzing regression coefficients and 1 if analyzing odds-rations.
-
 ### Run locally
 
 snakemake -j [number of cores]
 
 ### Output
 
-Your final output is in `result/ALL.RG.txt` file.
+Your final output is in the `workdir` directory in `result/ALL.RG.txt` file.
 
 Pipeline creates directories:
 - `traits`: single input JSON file for each trait
