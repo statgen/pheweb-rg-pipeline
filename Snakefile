@@ -6,12 +6,18 @@ import itertools
 configfile: "config.json"
 
 
-def get_unique_phenocode_pairs(json_file, loc):
+def get_phenocodes(json_file):
    with open(json_file, 'r') as f_in:
       traits = json.load(f_in)
-      phenocodes = [str(t['phenocode']).replace('.', '__') for t in traits]
-      unique_pairs = itertools.combinations(phenocodes, 2)
-      return [ p[loc] for p in unique_pairs ]
+      return [str(t['phenocode']).replace('.', '__') for t in traits]
+
+
+def get_phenocode_buddy(phenocodes, phenocode):
+   for i in range(phenocodes.index(phenocode) + 1, len(phenocodes)):
+      yield phenocodes[i]
+
+
+phenocodes = get_phenocodes("pheno-list.json")
 
 
 def read_corr(filename):
@@ -43,25 +49,41 @@ rule all:
    input: "result/ALL.RG.txt"
 
 
-rule merge:
-   input: expand("pair_corr/{phenocode1}.{phenocode2}.log", zip, phenocode1 = get_unique_phenocode_pairs("pheno-list.json", 0), phenocode2 = get_unique_phenocode_pairs("pheno-list.json", 1))
+rule merge_all:
+   input: expand("pair_corr/{phenocode}.RG.txt", phenocode = phenocodes)
    output: "result/ALL.RG.txt"
    run:
-      merged = []
-      for f in input:
-         corr = read_corr(f)
-         if not corr: continue
-         merged.append(corr)
-      write_merged(merged, output[0])
+      with open(output[0], 'w') as f_out:
+         for i, f in enumerate(input):
+            with open(f, 'r') as f_in:
+               header = f_in.readline()
+               if not header: continue
+               if i == 0: f_out.write(header)
+               for line in f_in: f_out.write(line)
+
+
+rule merge_single:
+   input: lambda wildcards: [ "pair_corr/{0}/{0}.{1}.log".format(wildcards.phenocode, p)  for p in get_phenocode_buddy(phenocodes, wildcards.phenocode) ]
+   output: "pair_corr/{phenocode}.RG.txt"
+   run:
+      if not input: # this phenocode has no unique buddies
+         shell("touch {output}")
+      else:
+         merged = []
+         for f in input:
+            corr = read_corr(f)
+            if not corr: continue
+            merged.append(corr)
+         write_merged(merged, output[0])
 
  
 rule corr:
    input: "munged/{phenocode1}.sumstats.gz", "munged/{phenocode2}.sumstats.gz"
-   output: "pair_corr/{phenocode1}.{phenocode2}.log"
+   output: "pair_corr/{phenocode1}/{phenocode1}.{phenocode2}.log"
    run:
       ldsc_exec = os.path.join(config['LDSC'], 'ldsc.py')
       ldsc_scores = config['LDSC_scores']
-      output_prefix = os.path.join("pair_corr", "{}.{}".format(wildcards.phenocode1, wildcards.phenocode2))
+      output_prefix = os.path.join("pair_corr", wildcards.phenocode1, "{}.{}".format(wildcards.phenocode1, wildcards.phenocode2))
       shell("{ldsc_exec} --rg {input[0]},{input[1]} --ref-ld-chr {ldsc_scores} --w-ld-chr {ldsc_scores} --out {output_prefix}")
 
 
@@ -89,13 +111,15 @@ rule munge:
 
 rule split:
    input: "pheno-list.json"
-   output: dynamic("traits/{phenocode}.json")
+   output: "traits/{phenocode}.json"
    run:
       for f in input:
          with open(f) as f_in:
             data = json.load(f_in)
             for trait in data:
                filename = str(trait['phenocode']).replace('.', '__')
-               with open("traits/{}.json".format(filename), "w") as f_out:
-                  json.dump(trait, f_out)
+               if wildcards.phenocode == filename:
+                  with open("traits/{}.json".format(filename), "w") as f_out:
+                     json.dump(trait, f_out)
+                  break
 
