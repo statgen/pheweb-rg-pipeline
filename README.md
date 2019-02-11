@@ -62,7 +62,7 @@ snakemake -j [number of cores]
 
 ### Output
 
-Your final output is in the `workdir` directory in `result/ALL.RG.txt` file.
+Your final output is in the `workdir` directory in the `result/ALL.RG.txt` file.
 
 Pipeline creates directories:
 - `traits`: single input JSON file for each trait
