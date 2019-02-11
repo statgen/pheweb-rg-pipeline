@@ -5,6 +5,7 @@ import itertools
 
 configfile: "config.json"
 
+workdir: config.get('workdir', '.')
 
 def get_phenocodes(json_file):
    with open(json_file, 'r') as f_in:

@@ -1,4 +1,5 @@
 {
+   "workdir": ".",
    "LDSC": "/home/ldsc",
    "LDSC_snplist": "/home/ldsc/w_hm3.snplist",
    "LDSC_scores": "/home/ldsc/eur_w_ld_chr/",
