@@ -1,0 +1,11 @@
+{
+   "__default__" :
+   {
+      "job-name": "RG.{rule}",
+      "partition" : "nomosix",
+      "time" : "14-0",
+      "mem": 8000,
+      "output": "logs/%j.%x.out.txt",
+      "error": "logs/%j.%x.err.txt"
+   }
+}
