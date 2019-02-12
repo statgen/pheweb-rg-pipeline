@@ -4,8 +4,8 @@ import itertools
 
 
 configfile: "config.json"
-
 workdir: config.get('workdir', '.')
+
 
 def get_phenocodes(json_file):
    with open(json_file, 'r') as f_in:
@@ -18,7 +18,18 @@ def get_phenocode_buddy(phenocodes, phenocode):
       yield phenocodes[i]
 
 
+def get_munge_params(filename, phenocode):
+   with open(filename) as f_in:
+      traits = json.load(f_in)
+      for trait in traits:
+         munged_phenocode = str(trait['phenocode']).replace('.', '__')
+         if phenocode == munged_phenocode:
+            return [trait['assoc_files'][0], trait['num_cases'], trait['num_controls']]
+
+
 phenocodes = get_phenocodes("pheno-list.json")
+ldsc_exec = os.path.join(config['LDSC'], 'ldsc.py')
+munge_exec = os.path.join(config['LDSC'], 'munge_sumstats.py')
 
 
 def read_corr(filename):
@@ -80,47 +91,21 @@ rule merge_single:
  
 rule corr:
    input: "munged/{phenocode1}.sumstats.gz", "munged/{phenocode2}.sumstats.gz"
+   params:
+      prefix = "pair_corr/{phenocode1}/{phenocode1}.{phenocode2}"
    output: "pair_corr/{phenocode1}/{phenocode1}.{phenocode2}.log"
-   run:
-      ldsc_exec = os.path.join(config['LDSC'], 'ldsc.py')
-      ldsc_scores = config['LDSC_scores']
-      output_prefix = os.path.join("pair_corr", wildcards.phenocode1, "{}.{}".format(wildcards.phenocode1, wildcards.phenocode2))
-      shell("{ldsc_exec} --rg {input[0]},{input[1]} --ref-ld-chr {ldsc_scores} --w-ld-chr {ldsc_scores} --out {output_prefix}")
+   conda: "ldsc_env.yml"
+   shell:
+      "{ldsc_exec} --rg {input[0]},{input[1]} --ref-ld-chr {config[LDSC_scores]} --w-ld-chr {config[LDSC_scores]} --out {params.prefix}"
 
 
 rule munge:
-   input: "traits/{phenocode}.json"
-   output: "munged/{phenocode}.sumstats.gz"
-   run:
-      with open(input[0]) as f_in:
-         trait = json.load(f_in)
-         trait_phenocode = trait['phenocode']
-         trait_assoc_file = trait['assoc_files'][0]
-         trait_n_cases = trait['num_cases']
-         trait_n_controls = trait['num_controls']
-         munge_exec = os.path.join(config['LDSC'], 'munge_sumstats.py')
-         snp_list = config['LDSC_snplist']
-         pval_column = config['columns']['pvalue']
-         effect_column = config['columns']['effect']
-         snp_column = config['columns']['snp']
-         effect_allele_column = config['columns']['effect_allele']
-         other_allele_column = config['columns']['other_allele']
-         no_effect_value = config['no_effect']
-         output_prefix = os.path.join("munged", wildcards.phenocode)
-         shell("{munge_exec} --chunksize 100000 --sumstats {trait_assoc_file} --merge-alleles {snp_list} --N-cas {trait_n_cases} --N-con {trait_n_controls} --p {pval_column} --signed-sumstats {effect_column},{no_effect_value} --snp {snp_column} --a1 {effect_allele_column} --a2 {other_allele_column} --out {output_prefix}")
-
-
-rule split:
    input: "pheno-list.json"
-   output: "traits/{phenocode}.json"
-   run:
-      for f in input:
-         with open(f) as f_in:
-            data = json.load(f_in)
-            for trait in data:
-               filename = str(trait['phenocode']).replace('.', '__')
-               if wildcards.phenocode == filename:
-                  with open("traits/{}.json".format(filename), "w") as f_out:
-                     json.dump(trait, f_out)
-                  break
+   params: 
+      prefix = "munged/{phenocode}",
+      munge_params = lambda wildcards, input: get_munge_params(input[0], wildcards.phenocode)
+   output: "munged/{phenocode}.sumstats.gz"
+   conda: "ldsc_env.yml"
+   shell:
+      "{munge_exec} --chunksize 100000 --sumstats {params.munge_params[0]} --merge-alleles {config[LDSC_snplist]} --N-cas {params.munge_params[1]} --N-con {params.munge_params[2]} --p {config[columns][pvalue]} --signed-sumstats {config[columns][effect]},{config[no_effect]} --snp {config[columns][snp]} --a1 {config[columns][effect_allele]} --a2 {config[columns][other_allele]} --out {params.prefix}"
 
