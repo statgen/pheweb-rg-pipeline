@@ -4,7 +4,7 @@ Pipepline for calculating genetic correlations via summary statistics between >1
 Genetic correlation is on the observed scale (i.e. not liability scale)
 
 ## Required tools
-- Snakemake
+- Latest Snakemake (follow instructions at https://snakemake.readthedocs.io/en/stable/getting_started/installation.html#installation-via-conda)
 - LDSC (https://github.com/bulik/ldsc)
 
 ## Required data:
@@ -63,8 +63,9 @@ Further details on how to create input file you can find at https://github.com/s
 #### - Locally 
 
 ```
-snakemake -j [number of cores to use]
+snakemake --use-conda -j [number of cores to use]
 ```
+Reminder: don't forget to activate your Miniconda3 environment with installed `Snakemake`.
 
 #### - With SLURM
 
@@ -72,8 +73,9 @@ snakemake -j [number of cores to use]
 
 Run the following command specifying max. number of SLURM jobs (submitted at once) with the `-j` option:
 ```
-snakemake -j [max number of jobs to submit] --cluster-config cluster.SLURM.json --cluster "sbatch -J {cluster.job-name} --mem {cluster.mem} -p {cluster.partition} -t {cluster.time} -e {cluster.error} -o {cluster.output}"
+snakemake --use-conda -j [max number of jobs to submit] --cluster-config cluster.SLURM.json --cluster "sbatch -J {cluster.job-name} --mem {cluster.mem} -p {cluster.partition} -t {cluster.time} -e {cluster.error} -o {cluster.output}"
 ```
+Reminder: don't forget to activate your Miniconda3 environment with installed `Snakemake`.
 
 ### Output
 
