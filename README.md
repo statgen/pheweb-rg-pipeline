@@ -82,7 +82,6 @@ Reminder: don't forget to activate your Miniconda3 environment with installed `S
 Your final output is in the `workdir` directory in the `result/ALL.RG.txt` file.
 
 Pipeline creates directories:
-- `traits`: single input JSON file for each trait
 - `munged`: re-formatted input files and logs by LDSC 
 - `pair_corr`: LDSC genetic correlation files for each unique traits pair
 - `result`: final merged result
