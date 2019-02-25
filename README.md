@@ -7,7 +7,9 @@ Pipeline can be run locally or on SLURM.
 
 ## Required tools
 - Python 3 (recommended)
-- Nextflow (https://www.nextflow.io)
+- Nextflow (https://www.nextflow.io) 
+   * can be installed as a standalone tool (https://www.nextflow.io/docs/latest/getstarted.html#installation), or
+   * using Miniconda (https://anaconda.org/bioconda/nextflow)
 - LDSC (https://github.com/bulik/ldsc)
 
 ## Required data:
