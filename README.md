@@ -1,10 +1,13 @@
 # pheweb-rg-pipeline
 
-Pipepline for calculating genetic correlations via summary statistics between >1,000 phenotypes in PheWeb.
-Genetic correlation is on the observed scale (i.e. not liability scale)
+Pipeline for calculating genetic correlations via summary statistics between >1,000 phenotypes in PheWeb.
+Genetic correlation is on the observed scale (i.e. not liability scale).
+
+Pipeline can be run locally or on SLURM.
 
 ## Required tools
-- Latest Snakemake (follow instructions at https://snakemake.readthedocs.io/en/stable/getting_started/installation.html#installation-via-conda)
+- Python 3 (recommended)
+- Nextflow (https://www.nextflow.io)
 - LDSC (https://github.com/bulik/ldsc)
 
 ## Required data:
@@ -20,17 +23,16 @@ Genetic correlation is on the observed scale (i.e. not liability scale)
 
 ### Configuration
 
-Before running the pipeline you may need to change your `config.json` file:
-- Set your working directory in the `workdir` field. Pipeline will write all intermediate and final results to this working directory. Default working directory is `.` (i.e. current directory with the `Snakemake` file).
+Before running the pipeline you may need to change your `nextflow.config` file:
 - Specify path to the directory with LDSC tool in the `LDSC` field.
 - Specify path to HapMap SNP list (i.e. w_hm3.snplist) in `LDSC_snplist` field.
 - Specify path to LD scores directory (i.e. eur_w_ld_chr/) in `LDSC_scores` field.
-- Provide column names inside `columns` field collection.
+- Provide column names inside `columns` configuration scope.
 - Set `no_effect` to 0 if analyzing regression coefficients and 1 if analyzing odds-rations.
 
 ### Input
 
-The input file must be named `pheno-list.json` and must be placed to your `workdir` (see Configuration section). It has the same format as in PheWEB data import pipeline.
+The input file must be named `pheno-list.json`. It has the same format as in PheWEB data import pipeline.
 ```json
 [
  {
@@ -58,30 +60,23 @@ Further details on how to create input file you can find at https://github.com/s
 
 ### Run
 
-*Important:* if you have >1000 phenotypes, it may take a while until `snakemake` evaluates all dependenies and starts submitting computational jobs. Try to use the most recent version of `snakemake`.
-
 #### - Locally 
 
+Inside `nextflow.config` file, set number of cpus you want to use using `cpus` parameter.
+
+Place your input file `pheno-list.json` inside the direcroty where you want to save results (this will also be a working directory for all intermediate files). Then, in the same directory run:
 ```
-snakemake --use-conda -j [number of cores to use]
+nextflow run /path/to/LDSC.nf
 ```
-Reminder: don't forget to activate your Miniconda3 environment with installed `Snakemake`.
 
 #### - With SLURM
 
-(Optional) Edit `partition` option in the `cluster.SLURM.json` configuration file.
-
-Run the following command specifying max. number of SLURM jobs (submitted at once) with the `-j` option:
-```
-snakemake --use-conda -j [max number of jobs to submit] --cluster-config cluster.SLURM.json --cluster "sbatch -J {cluster.job-name} --mem {cluster.mem} -p {cluster.partition} -t {cluster.time} -e {cluster.error} -o {cluster.output}"
-```
-Reminder: don't forget to activate your Miniconda3 environment with installed `Snakemake`.
+Under preparation...
 
 ### Output
 
 Your final output is in the `workdir` directory in the `result/ALL.RG.txt` file.
 
 Pipeline creates directories:
-- `munged`: re-formatted input files and logs by LDSC 
-- `pair_corr`: LDSC genetic correlation files for each unique traits pair
-- `result`: final merged result
+- `work`: `Nexflow` working directory with output files from all steps.
+- `result`: directory with final merged result
