@@ -88,7 +88,7 @@ process merge {
       corr = read_pair_corr(f)
       if not corr: continue
       merged.append(corr)
-      write_merged(merged, "ALL.RG.txt")
+   write_merged(merged, "ALL.RG.txt")
    """
 }
 
