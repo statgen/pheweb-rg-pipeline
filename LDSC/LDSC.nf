@@ -15,6 +15,8 @@ ldsc_exec = params.LDSC + "/ldsc.py"
 
 process munge {
 
+   label "small_mem"
+
    input:
    set val(num), val(phenocode), val(filename), val(n_cases), val(n_controls) from munge_params
 
@@ -35,6 +37,8 @@ munged.into(munged_a, munged_b)
 
 process pair_corr {
 
+   label = "small_mem"
+
    input:
    set val(num1), val(phenocode1), file(munged1), val(num2), val(phenocode2), file(munged2) from munged_a.combine(munged_b).filter{ it[0] < it[3] }
 
@@ -49,6 +53,8 @@ process pair_corr {
 
 
 process merge {
+
+   label "big_mem"
 
    publishDir 'results'
 
