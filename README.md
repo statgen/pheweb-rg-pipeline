@@ -14,8 +14,8 @@ Pipeline can be run locally or on SLURM.
 - Nextflow (https://www.nextflow.io) 
    * can be installed as a standalone tool (https://www.nextflow.io/docs/latest/getstarted.html#installation), or
    * using Miniconda (https://anaconda.org/bioconda/nextflow)
-- LDSC (https://github.com/bulik/ldsc), when computing LDSC genetic correlations
-- LDAK (http://dougspeed.com/sumher/), when computing SumHer genetic correlations
+- LDSC (https://github.com/bulik/ldsc), when computing genetic correlations via LDSC 
+- SumHer (http://dougspeed.com/sumher/), when computing genetic correlations via SumHer
 
 ## Required data:
 - Summary statistics are derived from association analyses run in primarily European-ancestry samples. 
@@ -26,7 +26,7 @@ Pipeline can be run locally or on SLURM.
     - w_hm3.snplist #HapMap SNPs to extract for LDSC analyses (see https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
     - eur_w_ld_chr/ #pre-computed LD scores using 1000G Eur (see https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
 - When using SumHer:
-    - 1000 Genomes based reference panel from ...
+    - 1000 Genomes based reference panel in PLINK binary format (i.e. can use the 1000 Genome EUR phase 3 files provided by LDSC at https://data.broadinstitute.org/alkesgroup/LDSCORE/1000G_Phase3_plinkfiles.tgz) 
 
 ## How to run
 
