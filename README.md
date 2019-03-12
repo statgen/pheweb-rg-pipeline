@@ -67,11 +67,11 @@ If you have a tab-delimited file (no header) with the following columns: full pa
 
 Further details on how to create the input file are at https://github.com/statgen/pheweb.
 
-### Run
+### Run LDSC
 
 #### - Locally 
 
-Inside the `nextflow.config` file, set the number of cpus you want to use via the `cpus` parameter:
+Inside the `LDSC/nextflow.config` file, set the number of cpus you want to use via the `cpus` parameter:
 ```
 ...
 $local {
@@ -87,7 +87,7 @@ nextflow run /path/to/LDSC.nf
 
 #### - With SLURM
 
-Inside the `nextflow.config` file, uncomment `executor = "slurm"` line and comment `executor = "local"` line:
+Inside the `LDSC/nextflow.config` file, uncomment `executor = "slurm"` line and comment `executor = "local"` line:
 ```
 executor = "slurm"
 // executor = "local"
@@ -98,6 +98,27 @@ Place your input file `pheno-list.json` inside the directory where you want to s
 ```
 nextflow run /path/to/LDSC.nf
 ```
+
+### Run SumHer
+
+#### - Locally 
+
+Inside the `SumHer/nextflow.config` file, set the number of cpus you want to use via the `cpus` parameter:
+```
+...
+$local {
+  cpus = 4
+}
+...
+```
+
+Place your input file `pheno-list.json` inside the directory where you want to save results (this will also be the working directory for all intermediate files). Then, in the same directory run:
+```
+nextflow run /path/to/SumHer.nf
+```
+
+#### - With SLURM
+[ under preparation ]
 
 
 ### Output
