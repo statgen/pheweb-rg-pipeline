@@ -3,6 +3,10 @@
 Pipeline for calculating genetic correlations via summary statistics between >1,000 phenotypes in PheWeb.
 Genetic correlation is on the observed scale (i.e. not liability scale).
 
+Pipeline allows to choose the following tools:
+- LDSC (https://github.com/bulik/ldsc)
+- SumHer (http://dougspeed.com/sumher/)
+
 Pipeline can be run locally or on SLURM.
 
 ## Required tools
@@ -10,16 +14,19 @@ Pipeline can be run locally or on SLURM.
 - Nextflow (https://www.nextflow.io) 
    * can be installed as a standalone tool (https://www.nextflow.io/docs/latest/getstarted.html#installation), or
    * using Miniconda (https://anaconda.org/bioconda/nextflow)
-- LDSC (https://github.com/bulik/ldsc)
+- LDSC (https://github.com/bulik/ldsc), when computing LDSC genetic correlations
+- LDAK (http://dougspeed.com/sumher/), when computing SumHer genetic correlations
 
 ## Required data:
 - Summary statistics are derived from association analyses run in primarily European-ancestry samples. 
 - Summary statistics contain separate columns for effect size, p-value, effect-allele (a1), the non-effect allele (a2)
 - N cases and N controls (for binary traits) are provided
 - N >3K 
-- From LD score regression (LDSC): 
+- When using LDSC: 
     - w_hm3.snplist #HapMap SNPs to extract for LDSC analyses (see https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
     - eur_w_ld_chr/ #pre-computed LD scores using 1000G Eur (see https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
+- When using SumHer:
+    - 1000 Genomes based reference panel from ...
 
 ## How to run
 
