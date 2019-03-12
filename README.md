@@ -30,15 +30,6 @@ Pipeline can be run locally or on SLURM.
 
 ## How to run
 
-### Configuration
-
-Before running the pipeline you may need to change your `nextflow.config` file:
-- Specify path to the directory where LDSC is installed in the `LDSC` field.
-- Specify path to the HapMap SNP list (i.e. w_hm3.snplist) in the `LDSC_snplist` field.
-- Specify path to the LD scores directory (i.e. eur_w_ld_chr/) in the `LDSC_scores` field.
-- Provide column names inside the `columns` configuration scope.
-- Set `no_effect` to 0 if analyzing regression coefficients or 1 if analyzing odds-ratios.
-
 ### Input
 
 The input file must be named `pheno-list.json`. It has the same format as in the PheWeb data import pipeline.
@@ -68,6 +59,15 @@ If you have a tab-delimited file (no header) with the following columns: full pa
 Further details on how to create the input file are at https://github.com/statgen/pheweb.
 
 ### Run LDSC
+
+#### Configuration
+
+Before running the pipeline you may need to change your `LDSC/nextflow.config` file:
+- Specify path to the directory where LDSC is installed in the `LDSC` field.
+- Specify path to the HapMap SNP list (i.e. w_hm3.snplist) in the `LDSC_snplist` field.
+- Specify path to the LD scores directory (i.e. eur_w_ld_chr/) in the `LDSC_scores` field.
+- Provide column names inside the `columns` configuration scope.
+- Set `no_effect` to 0 if analyzing regression coefficients or 1 if analyzing odds-ratios.
 
 #### - Locally 
 
@@ -100,6 +100,12 @@ nextflow run /path/to/LDSC.nf
 ```
 
 ### Run SumHer
+
+#### Configuration
+
+Before running the pipeline you may need to change your `SumHer/nextflow.config` file:
+- Specify path to the LDAK executable in the `LDAK` field.
+- Specify path to the directory with the referfernce panel (in Plink's bim and bam files; may be split by chromosome) in the `ref_panel` field.
 
 #### - Locally 
 
