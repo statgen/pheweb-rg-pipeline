@@ -60,7 +60,7 @@ Further details on how to create the input file are at https://github.com/statge
 
 ### Run LDSC
 
-#### Configuration
+#### - Configuration
 
 Before running the pipeline you may need to change your `LDSC/nextflow.config` file:
 - Specify path to the directory where LDSC is installed in the `LDSC` field.
@@ -101,7 +101,7 @@ nextflow run /path/to/LDSC.nf
 
 ### Run SumHer
 
-#### Configuration
+#### - Configuration
 
 Before running the pipeline you may need to change your `SumHer/nextflow.config` file:
 - Specify path to the LDAK executable in the `LDAK` field.
@@ -109,7 +109,7 @@ Before running the pipeline you may need to change your `SumHer/nextflow.config`
 
 #### - Locally 
 
-Inside the `SumHer/nextflow.config` file, set the number of cpus you want to use via the `cpus` parameter:
+Inside the `SumHer/nextflow.config` file, set the number of cpus you want to use via the `cpus` parameter e.g.:
 ```
 ...
 $local {
@@ -124,7 +124,25 @@ nextflow run /path/to/SumHer.nf
 ```
 
 #### - With SLURM
-[ under preparation ]
+
+Inside the `SumHer/nextflow.config` file:
+1. uncomment `executor = "slurm"` line and comment `executor = "local"` line e.g.:
+  ```
+  executor = "slurm"
+  // executor = "local"
+  ```
+2. Set SLURM queue name via the `queue` parameter.
+3. Set maximal number of parallel SLURM jobs via the `queueSize` e.g.:
+  ```
+  $slurm {
+    queueSize = 1000
+  }
+  ```
+
+Place your input file `pheno-list.json` inside the directory where you want to save results (this will also be the working directory for all intermediate files). Then, in the same directory run:
+```
+nextflow run /path/to/LDSC.nf
+```
 
 
 ### Output
