@@ -17,6 +17,8 @@ ldak_exec = params.LDAK
 process mhc {
 
    label "small_mem"
+   errorStrategy "retry"
+   maxRetries 3
 
    input:
    file bim from bim
@@ -34,6 +36,8 @@ process mhc {
 process format {
 
    label "small_mem"
+   errorStrategy "retry"
+   maxRetries 3
 
    input:
    set val(num), val(phenocode), val(filename) from format_params
@@ -78,6 +82,8 @@ formatted.separate(formatted2intersection, formatted2unique_a, formatted2unique_
 process intersection {
 
    label "small_mem"
+   errorStrategy "retry"
+   maxRetries 3
 
    input:
    file nonambs from formatted2intersection.collect()
@@ -113,6 +119,8 @@ process unique {
 process tagging {
    
    label "high_cpu"
+   errorStrategy "retry"
+   maxRetries 3
 
    input:
    file intersected from intersected
@@ -144,6 +152,8 @@ process tagging {
 process pair_corr {
 
    label "small_mem"
+   errorStrategy "retry"
+   maxRetries 3
 
    input:
    set val(phenocode1), file(stats1), file(exclude1), val(phenocode2), file(stats2), file(exclude2) from formatted2pair_corr_a.combine(formatted2pair_corr_b).filter{ it[0] < it[4] }.map { [it[1], it[2], it[3], it[5], it[6], it[7]] }
@@ -164,6 +174,8 @@ process pair_corr {
 process merge {
 
    label "small_mem"
+   errorStrategy "retry"
+   maxRetries 3
 
    publishDir "results"
 
