@@ -116,9 +116,9 @@ process unique {
 }
 
 
-process tagging {
+process tagging_chr {
    
-   label "high_cpu"
+   label "small_mem"
    errorStrategy "retry"
    maxRetries 3
 
@@ -128,20 +128,37 @@ process tagging {
    file bed from bed
    file bim from bim
    file fam from fam
+   each chr from Channel.from(1..22)
+
+   output:
+   set val(mdsum), file("sumldak_${mdsum}_${chr}.tagging") into tagged_chr
+
+   """
+   cat ${exclude1} ${exclude2} | sort | uniq > combined.exclude
+   bim_file=`grep -l "^${chr}\\s" 1000G.EUR.QC.*.bim`
+   [ -z \$bim_file ] && echo "BIM file for chromosome ${chr} was not found!" && exit 1
+   ${ldak_exec} --cut-weights weights_${mdsum}_${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr ${chr}
+   ${ldak_exec} --calc-weights-all weights_${mdsum}_${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr ${chr}
+   ${ldak_exec} --calc-tagging sumldak_${mdsum}_${chr} --bfile \${bim_file%*.bim} --weights weights_${mdsum}_${chr}/weights.short --power -0.25 --extract ${intersected} --exclude combined.exclude --window-kb 1000 --chr ${chr}
+   touch sumldak_${mdsum}_${chr}.tagging 
+   """
+ 
+}
+
+
+process tagging_merge {
+
+   label "small_mem"
+   errorStrategy "retry"
+   maxRetries 3
+
+   input:
+   set val(mdsum), file(tagged_chr) from tagged_chr.groupTuple()
 
    output:
    file "sumldak_${mdsum}.tagging" into tagged
 
    """
-   cat ${exclude1} ${exclude2} | sort | uniq > combined.exclude
-   for bim_file in `find . -name "*.bim"`; do
-      for chr in `cut -f1 \${bim_file} | uniq`; do
-         (${ldak_exec} --cut-weights weights_${mdsum}_\${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr \${chr} &&\
-         ${ldak_exec} --calc-weights-all weights_${mdsum}_\${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr \${chr} &&\
-         ${ldak_exec} --calc-tagging sumldak_${mdsum}_\${chr} --bfile \${bim_file%*.bim} --weights weights_${mdsum}_\${chr}/weights.short --power -0.25 --extract ${intersected} --exclude combined.exclude --window-kb 1000 --chr \${chr} ) &
-      done
-   done 
-   wait
    find . -maxdepth 1 -name "sumldak_${mdsum}_*.tagging" -printf "%f\n" | sort -V > list.txt
    ${ldak_exec} --join-tagging sumldak_${mdsum} --taglist list.txt
    """
