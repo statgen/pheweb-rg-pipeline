@@ -139,8 +139,7 @@ process tagging_chr {
    [ -z \$bim_file ] && echo "BIM file for chromosome ${chr} was not found!" && exit 1
    ${ldak_exec} --cut-weights weights_${mdsum}_${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr ${chr}
    ${ldak_exec} --calc-weights-all weights_${mdsum}_${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr ${chr}
-   ${ldak_exec} --calc-tagging sumldak_${mdsum}_${chr} --bfile \${bim_file%*.bim} --weights weights_${mdsum}_${chr}/weights.short --power -0.25 --extract ${intersected} --exclude combined.exclude --window-kb 1000 --chr ${chr}
-   touch sumldak_${mdsum}_${chr}.tagging 
+   ${ldak_exec} --calc-tagging sumldak_${mdsum}_${chr} --bfile \${bim_file%*.bim} --weights weights_${mdsum}_${chr}/weights.short --power -0.25 --extract ${intersected} --exclude combined.exclude --window-kb 1000 --chr ${chr} 
    """
  
 }
