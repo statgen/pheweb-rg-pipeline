@@ -101,7 +101,6 @@ process intersection {
 process unique {
 
    executor 'local'
-   maxForks 1
   
    input:
    set file(exclude1), file(exclude2) from formatted2unique_a.combine(formatted2unique_b).filter{ it[0] < it[2] }.map { [it[1], it[3]] } 
