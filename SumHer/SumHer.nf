@@ -134,7 +134,7 @@ process tagging_chr {
 
    """
    cat ${exclude1} ${exclude2} | sort | uniq > combined.exclude
-   bim_file=`grep -l "^${chr}\\s" 1000G.EUR.QC.*.bim`
+   bim_file=`grep -l "^${chr}\\s" *.bim`
    [ -z \$bim_file ] && echo "BIM file for chromosome ${chr} was not found!" && exit 1
    ${ldak_exec} --cut-weights weights_${mdsum}_${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr ${chr}
    ${ldak_exec} --calc-weights-all weights_${mdsum}_${chr} --bfile \${bim_file%*.bim} --extract ${intersected} --exclude combined.exclude --chr ${chr}
