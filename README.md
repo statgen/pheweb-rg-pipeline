@@ -115,6 +115,19 @@ Before running the pipeline you may need to change your `SumHer/nextflow.config`
 
   To combine two (or more) phenotype files use `cat-pheno-list.py -i pheno-list.json new-pheno-list.json -o pheno-list.json`. Note: if you don't want to overwrite your original `pheno-list.json` file, specify different name in `-o` option and change the corresponding name in the `all_pheno_list` field of your `SumHer/nextflow.config` file.
   
+  Chunking:
+  
+  Alternatively, you can chunk a large `pheno-list.json` file into multiple independent non-overlapping runs.
+  For example, the following command chunks `pheno-list.json` into chunks with 100 phenotypes each:
+  ```
+  chunk-pheno-list.py -i pheno-list.json -s 100
+  ```
+  It will create multiple `chunk_[1-9]+` directories. Each directory will store `pheno-list.json` and `compute-pheno-list.json` files.
+  In order to run a single chunk (for example `chunk_1`):
+  - set `compute_pheno_list` to `compute-pheno-list.json` in your `SumHer/nextflow.config` file
+  - `cd chunk_1`
+  - `nextflow run /path/to/SumHer/SumHer.nf -c /path/to/SumHer/nextflow.config`
+  
 
 #### - Locally 
 
