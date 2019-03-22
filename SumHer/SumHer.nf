@@ -2,23 +2,41 @@
 
 import groovy.json.JsonSlurper
 
-phenotypes_json = (new JsonSlurper()).parseText(file('pheno-list.json').text)
+phenotypes_json = (new JsonSlurper()).parseText(file(params.all_pheno_list).text)
 
-format_params = []
-phenotypes_json.eachWithIndex{ val, num -> format_params.add( [num, val.phenocode.replaceAll('\\.', '__'), val.assoc_files[0]] ) } 
+compute_phenotypes_json = []
+if (params.compute_pheno_list != "") {
+   compute_phenotypes_json = (new JsonSlurper()).parseText(file(params.compute_pheno_list).text)
+}
+
+if (!phenotypes_json.containsAll(compute_phenotypes_json)) {
+   println "The ${params.all_pheno_list} file must contain all entries from the ${params.compute_pheno_list} file (i.e. must be a superset)."
+   exit 1
+}
+
+all_phenotypes = []
+phenotypes_json.eachWithIndex{ val, num -> all_phenotypes.add( [num, val.phenocode.replaceAll('\\.', '__'), val.assoc_files[0]] ) } 
+
+compute_phenotypes = []
+compute_phenotypes_json.each {
+   phenocode = it.phenocode.replaceAll('\\.', '__');
+   num = all_phenotypes.find { it[1] == phenocode }[0]; // there will be always a match because of the previous containsAll check
+   compute_phenotypes.add(num);
+}
+
+ldak_exec = params.LDAK
+
 
 bim = Channel.fromPath(params.ref_panel + "/*.bim").collect()
 bed = Channel.fromPath(params.ref_panel + "/*.bed").collect()
 fam = Channel.fromPath(params.ref_panel + "/*.fam").collect()
-
-ldak_exec = params.LDAK
 
 
 process mhc {
 
    label "small_mem"
    errorStrategy "retry"
-   maxRetries 3
+   maxRetries 5
 
    input:
    file bim from bim
@@ -37,10 +55,10 @@ process format {
 
    label "small_mem"
    errorStrategy "retry"
-   maxRetries 3
+   maxRetries 5
 
    input:
-   set val(num), val(phenocode), val(filename) from format_params
+   set val(num), val(phenocode), val(filename) from all_phenotypes
    file bed from bed
    file bim from bim
    file fam from fam
@@ -78,12 +96,22 @@ formatted.separate(formatted2intersection, formatted2unique_a, formatted2unique_
    it -> [ it[3], [it[0], it[4]], [it[0], it[4]], [it[0], it[1], it[2], it[4]], [it[0], it[1], it[2], it[4]]  ]
 }
 
+if (compute_phenotypes) {
+   unique_input = formatted2unique_a.filter { compute_phenotypes.contains(it[0]) }
+      .combine(formatted2unique_b).filter{  !compute_phenotypes.contains(it[2]) ? true : it[0] < it[2] }.map { [it[1], it[3]] }
+   pair_corr_input = formatted2pair_corr_a.filter { compute_phenotypes.contains(it[0]) }
+      .combine(formatted2pair_corr_b).filter{ !compute_phenotypes.contains(it[4]) ? true : it[0] < it[4] }.map { [it[1], it[2], it[3], it[5], it[6], it[7]] }
+} else {
+   unique_input = formatted2unique_a.combine(formatted2unique_b).filter{ it[0] < it[2] }.map { [it[1], it[3]] }
+   pair_corr_input = formatted2pair_corr_a.combine(formatted2pair_corr_b).filter{ it[0] < it[4] }.map { [it[1], it[2], it[3], it[5], it[6], it[7]] }
+}
+
 
 process intersection {
 
    label "small_mem"
    errorStrategy "retry"
-   maxRetries 3
+   maxRetries 5
 
    input:
    file nonambs from formatted2intersection.collect()
@@ -103,7 +131,7 @@ process unique {
    executor 'local'
   
    input:
-   set file(exclude1), file(exclude2) from formatted2unique_a.combine(formatted2unique_b).filter{ it[0] < it[2] }.map { [it[1], it[3]] } 
+   set file(exclude1), file(exclude2) from unique_input
 
    output:
    set file(exclude1), file(exclude2), stdout into unique 
@@ -119,7 +147,7 @@ process tagging_chr {
    
    label "small_mem"
    errorStrategy "retry"
-   maxRetries 3
+   maxRetries 5
 
    input:
    file intersected from intersected
@@ -148,7 +176,7 @@ process tagging_merge {
 
    label "small_mem"
    errorStrategy "retry"
-   maxRetries 3
+   maxRetries 5
 
    input:
    set val(mdsum), file(tagged_chr) from tagged_chr.groupTuple()
@@ -168,10 +196,10 @@ process pair_corr {
 
    label "small_mem"
    errorStrategy "retry"
-   maxRetries 3
+   maxRetries 5
 
    input:
-   set val(phenocode1), file(stats1), file(exclude1), val(phenocode2), file(stats2), file(exclude2) from formatted2pair_corr_a.combine(formatted2pair_corr_b).filter{ it[0] < it[4] }.map { [it[1], it[2], it[3], it[5], it[6], it[7]] }
+   set val(phenocode1), file(stats1), file(exclude1), val(phenocode2), file(stats2), file(exclude2) from pair_corr_input
    file tagged from tagged.collect()
 
    output:
@@ -190,7 +218,7 @@ process merge {
 
    label "small_mem"
    errorStrategy "retry"
-   maxRetries 3
+   maxRetries 5
 
    publishDir "results"
 
@@ -204,4 +232,3 @@ process merge {
    merge.py -i ${files} -o ALL.RG.txt
    """
 }
-
