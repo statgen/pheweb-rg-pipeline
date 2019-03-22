@@ -126,7 +126,7 @@ Before running the pipeline you may need to change your `SumHer/nextflow.config`
   In order to run a single chunk (for example `chunk_1`):
   - set `compute_pheno_list` to `compute-pheno-list.json` in your `SumHer/nextflow.config` file
   - `cd chunk_1`
-  - `nextflow run /path/to/SumHer/SumHer.nf -c /path/to/SumHer/nextflow.config`
+  - `nextflow run /path/to/SumHer/SumHer.nf`
   
 
 #### - Locally 
