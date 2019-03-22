@@ -106,7 +106,7 @@ nextflow run /path/to/LDSC.nf
 Before running the pipeline you may need to change your `SumHer/nextflow.config` file:
 - Specify path to the LDAK executable in the `LDAK` field.
 - Specify path to the directory with the referfernce panel (in Plink's bim and bam files; may be split by chromosome) in the `ref_panel` field.
-- (For incremental apporach) Specify path to the `*.json` file with a subset of summary statistics from `pheno-list.json` in the `compute_pheno_list` field.
+- (For incremental apporach) Specify the `*.json` file with a subset of summary statistics from `pheno-list.json` in the `compute_pheno_list` field.
 
   Rationale:
   
