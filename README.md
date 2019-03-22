@@ -110,17 +110,17 @@ Before running the pipeline you may need to change your `SumHer/nextflow.config`
 
   Rationale:
   
-  Sometimes you may need to compute genetic correlations for summary statistics files which arrive in batches. To avoid  recomputing all genetic correlations every time, our pipeline supports "incremental" approach. Suppose you had an input file `pheno-list.json` with 10 summary statistics files and you computed genetic correlations using this file (45 unique pairs). Later you got 4 other summary statistics files and created a new input file `new-pheno-list.json`. One approach is to combine 
-`pheno-list.json` and `new-pheno-list.json` together and run the pipeline again. In this way you will perform unnecessary computations of genetic correlations that you computed previously (45 out of 91 correlations). However, if you specify `new-pheno-list.json` in the `compute_pheno_list` field, then the pipeline will know that you want to compute only 46 new correlations with and within your 4 new summary statistics files. This can safe significant amount of computational time when you are dealing with >1000 phenotypes.
+  Sometimes you may need to compute genetic correlations for summary statistics files which arrive in batches. To avoid recomputing all genetic correlations each time, our pipeline supports an "incremental" approach. Suppose you had an input file `pheno-list.json` with information for 10 summary statistics files and you computed genetic correlations using this file (45 unique pairs). Later you received 4 other summary statistics files and created a new input file `new-pheno-list.json`. One approach is to combine 
+`pheno-list.json` and `new-pheno-list.json` together and run the pipeline again. Through this way you will perform unnecessary computations of genetic correlations that you computed previously (45 out of 91 correlations). However, if you specify `new-pheno-list.json` in the `compute_pheno_list` field, then the pipeline will know that you want to compute only 46 new correlations with and within your 4 new summary statistics files. This can save significant amounts of computational time when dealing with >1000 phenotypes.
 
-  To combine two (or more) phenotype files use `cat-pheno-list.py -i pheno-list.json new-pheno-list.json -o pheno-list.json`. Note: if you don't want to overwrite your original `pheno-list.json` file, specify different name in `-o` option and change the corresponding name in the `all_pheno_list` field of your `SumHer/nextflow.config` file.
+  To combine two (or more) phenotype files use `cat-pheno-list.py -i pheno-list.json new-pheno-list.json -o pheno-list.json`. Note: if you don't want to overwrite your original `pheno-list.json` file, specify a different name in the `-o` option and change the corresponding name in the `all_pheno_list` field of your `SumHer/nextflow.config` file.
   
   Chunking:
   
   Alternatively, you can chunk a large `pheno-list.json` file into multiple independent non-overlapping runs.
   For example, the following command chunks `pheno-list.json` into chunks with 100 phenotypes each:
   ```
-  chunk-pheno-list.py -i pheno-list.json -s 100
+  python chunk-pheno-list.py -i pheno-list.json -s 100
   ```
   It will create multiple `chunk_[1-9]+` directories. Each directory will store `pheno-list.json` and `compute-pheno-list.json` files.
   In order to run a single chunk (for example `chunk_1`):
