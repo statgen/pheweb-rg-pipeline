@@ -106,6 +106,13 @@ nextflow run /path/to/LDSC.nf
 Before running the pipeline you may need to change your `SumHer/nextflow.config` file:
 - Specify path to the LDAK executable in the `LDAK` field.
 - Specify path to the directory with the referfernce panel (in Plink's bim and bam files; may be split by chromosome) in the `ref_panel` field.
+- (For incremental apporach) Specify path to the `*.json` file with a subset of summary statistics from `pheno-list.json` in the `compute_pheno_list` field.
+
+  Rationale:
+  
+  Sometimes you may need to compute genetic correlations for summary statistics files which arrive in batches. To avoid  recomputing all genetic correlations every time, our pipeline supports "incremental" approach. Suppose you had an input file `pheno-list.json` with 10 summary statistics files and you computed genetic correlations using this file (45 unique pairs). Later you got 4 other summary statistics files and created a new input file `new-pheno-list.json`. One approach is to combine 
+`pheno-list.json` and `new-pheno-list.json` together and run the pipeline again. In this way you will perform unnecessary computations of genetic correlations that you computed previously (45 out of 91 correlations). However, if you specify `new-pheno-list.json` in the `compute_pheno_list` field, then the pipeline will know that you want to compute only 46 new correlations with and within your 4 new summary statistics files. This can safe significant amount of computational time when you are dealing with >1000 phenotypes.
+  
 
 #### - Locally 
 
